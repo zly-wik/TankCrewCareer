@@ -1,10 +1,11 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
-
 from django.db import models
-# Create your models here.
+
+
 class BaseObject(models.Model):
     """Base object used as parent for each mission object."""
-    # Model id field will be mission object Index field (in mission file).
+
+    # Model Fields =  id field will be mission object Index field (in mission file).
     name = models.CharField(max_length=128)
     desc = models.CharField(max_length=512, null=True, blank=True)
     mcu_targets = models.ManyToManyField('BaseObject', blank=True, related_name='target_parent')
