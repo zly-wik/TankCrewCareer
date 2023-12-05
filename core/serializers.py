@@ -6,4 +6,5 @@ from core.models import BaseObject
 class BaseObjectSerializer(ModelSerializer):
     class Meta:
         model = BaseObject
-        fields = ['index', 'name', 'desc']
+        fields = ['id', 'name', 'desc', 'mcu_targets', 'mcu_objects', 'x_pos', 'y_pos', 'z_pos', 'x_ori', 'y_ori', 'z_ori']
+        # read_only_fields = ['id']

@@ -1,18 +1,20 @@
-from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 
+from django.db import models
 # Create your models here.
 class BaseObject(models.Model):
-    index = models.PositiveIntegerField(unique=True, db_index=True)
+    """Base object used as parent for each mission object."""
+    # Model id field will be mission object Index field (in mission file).
     name = models.CharField(max_length=128)
-    desc = models.CharField(max_length=512)
-    mcu_targets = models.ForeignKey('BaseObject', on_delete=models.SET_NULL, to_field='index', null=True, blank=True, related_name='target_parent')
-    mcu_objects = models.ForeignKey('BaseObject', on_delete=models.SET_NULL, to_field='index', null=True, blank=True, related_name='object_parent')
-    x_pos = models.IntegerField(help_text='divided by 1000 will be mission-unit position')
-    y_pos = models.IntegerField(help_text='divided by 1000 will be mission-unit position')
-    z_pos = models.IntegerField(help_text='divided by 1000 will be mission-unit position')
-    x_ori = models.SmallIntegerField(help_text='mission-unit rotation 0-360*')
-    y_ori = models.SmallIntegerField(help_text='mission-unit rotation 0-360*')
-    z_ori = models.SmallIntegerField(help_text='mission-unit rotation 0-360*')
+    desc = models.CharField(max_length=512, null=True, blank=True)
+    mcu_targets = models.ManyToManyField('BaseObject', blank=True, related_name='target_parent')
+    mcu_objects = models.ManyToManyField('BaseObject', blank=True, related_name='object_parent')
+    x_pos = models.IntegerField(default=0)
+    y_pos = models.IntegerField(default=0)
+    z_pos = models.IntegerField(default=0)
+    x_ori = models.SmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(359)], help_text='mission-unit rotation 0-360*')
+    y_ori = models.SmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(359)], help_text='mission-unit rotation 0-360*')
+    z_ori = models.SmallIntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(359)], help_text='mission-unit rotation 0-360*')
 
     def __str__(self) -> str:
-        return f"[{self.index}] {self.name}"
+        return f"[{self.pk}] {self.name}"
