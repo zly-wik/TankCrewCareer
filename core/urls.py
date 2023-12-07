@@ -1,8 +1,8 @@
 from rest_framework.routers import SimpleRouter
 
-from core.views import BaseObjectVS
+from core.views import MissionObjectVS
 
 router = SimpleRouter()
-router.register('base-obj', BaseObjectVS)
+router.register('mission-obj', MissionObjectVS)
 
 urlpatterns = router.urls

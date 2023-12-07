@@ -1,9 +1,9 @@
 from rest_framework.viewsets import ModelViewSet
 
-from core.models import BaseObject
-from core.serializers import BaseObjectSerializer
+from core.models import MissionObject
+from core.serializers import MissionObjectSerializer
 
 
-class BaseObjectVS(ModelViewSet):
-    queryset = BaseObject.objects.all()
-    serializer_class = BaseObjectSerializer
+class MissionObjectVS(ModelViewSet):
+    queryset = MissionObject.objects.all()
+    serializer_class = MissionObjectSerializer

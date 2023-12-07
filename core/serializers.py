@@ -1,9 +1,9 @@
 from rest_framework.serializers import ModelSerializer
 
-from core.models import BaseObject
+from core.models import MissionObject
 
 
-class BaseObjectSerializer(ModelSerializer):
+class MissionObjectSerializer(ModelSerializer):
     class Meta:
-        model = BaseObject
-        fields = ['id', 'name', 'desc', 'mcu_targets', 'mcu_objects', 'x_pos', 'y_pos', 'z_pos', 'x_ori', 'y_ori', 'z_ori']
+        model = MissionObject
+        fields = ['pk', 'object_type', 'name', 'desc', 'mcu_targets', 'mcu_objects', 'position', 'properties']
