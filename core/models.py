@@ -31,3 +31,4 @@ class Mission(models.Model):
     mission_properties = models.JSONField(max_length=1024)
     wind_layers = models.JSONField(max_length=256)
     countries = models.JSONField(max_length=256)
+    mission_objects = models.ManyToManyField(MissionObject, blank=True, related_name='attached_mission')
