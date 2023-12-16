@@ -1,6 +1,7 @@
 from enum import StrEnum
 
 class MissionObjectType(StrEnum):
+    OPTIONS = 'Options'
     MCU_TR_AI_Poi = 'MCU_TR_AI_Poi'
     MCU_TR_MissionBegin = 'MCU_TR_MissionBegin'
     MCU_TR_MissionEnd = 'MCU_TR_MissionEnd'
