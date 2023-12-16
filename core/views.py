@@ -19,7 +19,7 @@ class MissionOptionsVS(ModelViewSet):
     queryset = Mission.objects.all()
     serializer_class = MissionSerializer
     
-    def retrieve(self, request, pk):
-        
-        Mission.objects.get(pk=pk).generate_mission('testMission')
-        return HttpResponse('Ok.')
+    # NOTE: DO NOT delete. Commented code is used while debugging
+    # def retrieve(self, request, pk):
+    #     Mission.objects.get(pk=pk).generate_mission('testMission')
+    #     return HttpResponse('Ok.')

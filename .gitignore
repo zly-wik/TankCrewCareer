@@ -8,3 +8,7 @@ Pipfile.lock
 
 # Database
 db.sqlite3
+
+
+# .Mission files
+*.Mission
