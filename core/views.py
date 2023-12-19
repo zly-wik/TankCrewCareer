@@ -1,4 +1,6 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+
+from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
 
 from core.models import MissionObject, Mission
@@ -20,6 +22,9 @@ class MissionOptionsVS(ModelViewSet):
     serializer_class = MissionSerializer
     
     # NOTE: DO NOT delete. Commented code is used while debugging
-    # def retrieve(self, request, pk):
-    #     Mission.objects.get(pk=pk).generate_mission('testMission')
-    #     return HttpResponse('Ok.')
+    @action(detail=True, methods=['get'])
+    def download(self, request, pk):
+        mission = Mission.objects.get(pk=pk)
+        mission.generate_mission(filename=mission.mission_name)
+        
+        return HttpResponseRedirect(self.reverse_action('detail', pk))

@@ -8,11 +8,15 @@ def dict_to_dot_mission(object_type: MissionObjectType, data: dict) -> str:
             data_string += f'{key} = {value};\n'
         elif isinstance(value, dict):
             data_string += dict_to_dot_mission(f'{key}', value)
+        elif isinstance(value, int):
+            data_string += f'{key} = {value};\n'
         elif key in {'Time', 'Date'}:
             data_string += f'{key} = {value};\n'
+        elif key in {'WindLayers', 'Countries'}:
+            data_string += key + '\n{\n' + value.strip() + '\n}\n'
         else:
             data_string += f'{key} = "{value}";\n'
     data_string += '}\n'
-    
+
     print(data_string)
     return data_string

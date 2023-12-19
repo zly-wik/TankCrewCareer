@@ -90,6 +90,8 @@ class Mission(models.Model):
         
         with open(f'{filename}.Mission', 'w') as file:
             file.write(self.dot_mission_string)
+        
+        return file
 
     
     @property
@@ -111,33 +113,33 @@ class Mission(models.Model):
     @property
     def formatted_wind_layers(self) -> str:
         # NOTE: As it's not important field at all, for now we just return valid WindLayers string with default (0) values.
-        return """
-            0 :     0 :     0;\n
-            500 :     0 :     0;\n
-            1000 :     0 :     0;\n
-            2000 :     0 :     0;\n
-            5000 :     0 :     0;\n
-        """
+        return (
+            "0 :     0 :     0;\n"
+            "500 :     0 :     0;\n"
+            "1000 :     0 :     0;\n"
+            "2000 :     0 :     0;\n"
+            "5000 :     0 :     0;\n"
+        )
 
     @property
     def formatted_countries(self) -> str:
         # NOTE: As it's not important field at all, for now we just return valid Countries string with default values.
-        return """
-          0 : 0;\n
-          101 : 1;\n
-          102 : 1;\n
-          103 : 1;\n
-          201 : 2;\n
-          202 : 2;\n
-          203 : 2;\n
-          301 : 3;\n
-          302 : 3;\n
-          303 : 3;\n
-          304 : 3;\n
-          305 : 3;\n
-          401 : 4;\n
-          402 : 4;\n
-        """
+        return (
+          "0 : 0;\n"
+          "101 : 1;\n"
+          "102 : 1;\n"
+          "103 : 1;\n"
+          "201 : 2;\n"
+          "202 : 2;\n"
+          "203 : 2;\n"
+          "301 : 3;\n"
+          "302 : 3;\n"
+          "303 : 3;\n"
+          "304 : 3;\n"
+          "305 : 3;\n"
+          "401 : 4;\n"
+          "402 : 4;\n"
+        )
 
     @property
     def other_required_fields(self) -> dict:
