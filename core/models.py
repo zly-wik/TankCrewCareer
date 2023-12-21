@@ -80,6 +80,7 @@ class Mission(models.Model):
             **self.other_required_fields,
             'WindLayers': self.formatted_wind_layers,
             'Countries': self.formatted_countries,
+            'MissionObjects': self.mission_objects.all(),
         }
         self.dot_mission_string = '# Mission File Version = 1.0;\n\n'
         self.dot_mission_string += dict_to_dot_mission(MissionObjectType.OPTIONS, object_keys)
