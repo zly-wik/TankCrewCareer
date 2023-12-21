@@ -1,7 +1,9 @@
 from django.db import models
 
-from core.enums import MissionObjectType
+from typing import Optional
 
+from core.enums import MissionObjectType
+from core.services import dict_to_dot_mission
 
 class MissionObject(models.Model):
     """Base object used as parent for each mission object."""
@@ -18,6 +20,39 @@ class MissionObject(models.Model):
     def __str__(self) -> str:
         return f'{self.object_type} | [{self.pk}] {self.name}'
 
+    @property
+    def index(self) -> int:
+        return self.pk
+
+    @property
+    def mcu_targets_list(self) -> list:
+        mcu_targets = []
+        for mcu in self.mcu_targets.all():
+            mcu_targets.append(mcu.index)
+        return mcu_targets
+
+    @property
+    def mcu_objects_list(self) -> list:
+        mcu_objects = []
+        for mcu in self.mcu_objects.all():
+            mcu_objects.append(mcu.index)
+        return mcu_objects
+
+    @property
+    def dot_mission_format(self) -> str: #currently not valid
+        object_keys = {
+            'Index': self.pk,
+            'Name': self.name,
+            'Desc': self.desc,
+            'Targets': self.mcu_targets_list,
+            'Objects': self.mcu_objects_list,
+            # 'position': self.position,
+            **self.properties,
+        }
+        dot_mission_string = dict_to_dot_mission(self.object_type, object_keys)
+
+        return dot_mission_string
+
 
 class Mission(models.Model):
     """Mission options used in '.Mission Options' object."""
@@ -32,3 +67,102 @@ class Mission(models.Model):
     wind_layers = models.JSONField(max_length=256)
     countries = models.JSONField(max_length=256)
     mission_objects = models.ManyToManyField(MissionObject, blank=True, related_name='attached_mission')
+    
+    dot_mission_string: str = None
+    
+    def generate_mission(self, filename: Optional[str]) -> str|None:
+        object_keys = {
+            'LCName': self.lc_name,
+            'LCDesc': self.lc_desc,
+            'LCAuthor': self.lc_author,
+            'Time': self.formatted_time,
+            'Date': self.formatted_date,
+            **self.other_required_fields,
+            'WindLayers': self.formatted_wind_layers,
+            'Countries': self.formatted_countries,
+            'MissionObjects': self.mission_objects.all(),
+        }
+        self.dot_mission_string = '# Mission File Version = 1.0;\n\n'
+        self.dot_mission_string += dict_to_dot_mission(MissionObjectType.OPTIONS, object_keys)
+        self.dot_mission_string += '\n\n# end of file'
+        
+        if not filename:
+            return self.dot_mission_string
+        
+        with open(f'{filename}.Mission', 'w') as file:
+            file.write(self.dot_mission_string)
+        
+        return file
+
+    
+    @property
+    def formatted_time(self) -> str:
+        string_time = str(self.mission_time)
+        time: str = string_time[0:2] + ':'
+        time += string_time[2:4] + ':'
+        time += string_time[4:6]
+        return time
+    
+    @property
+    def formatted_date(self) -> str:
+        string_date = str(self.mission_date)
+        date: str = string_date[0:2] + '.'
+        date += string_date[2:4] + '.'
+        date += string_date[4:8]
+        return date
+
+    @property
+    def formatted_wind_layers(self) -> str:
+        # NOTE: As it's not important field at all, for now we just return valid WindLayers string with default (0) values.
+        return (
+            "0 :     0 :     0;\n"
+            "500 :     0 :     0;\n"
+            "1000 :     0 :     0;\n"
+            "2000 :     0 :     0;\n"
+            "5000 :     0 :     0;\n"
+        )
+
+    @property
+    def formatted_countries(self) -> str:
+        # NOTE: As it's not important field at all, for now we just return valid Countries string with default values.
+        return (
+          "0 : 0;\n"
+          "101 : 1;\n"
+          "102 : 1;\n"
+          "103 : 1;\n"
+          "201 : 2;\n"
+          "202 : 2;\n"
+          "203 : 2;\n"
+          "301 : 3;\n"
+          "302 : 3;\n"
+          "303 : 3;\n"
+          "304 : 3;\n"
+          "305 : 3;\n"
+          "401 : 4;\n"
+          "402 : 4;\n"
+        )
+
+    @property
+    def other_required_fields(self) -> dict:
+        return {
+            'HMap': r"graphics\landscape\height.hini",
+            'Textures': r"graphics\landscape\textures.tini",
+            'Forests': r"graphics\landscape\trees\woods.wds",
+            'Layers': "",
+            'GuiMap': "lapino-winter",
+            'SeasonPrefix': "wi",
+            'MissionType': 0,
+            'AqmId': 0,
+            'CloudLevel': 500,
+            'CloudHeight': 500,
+            'PrecLevel': 0,
+            'PrecType': 0,
+            'CloudConfig': r"winter\00_clear_00\sky.ini",
+            'SeaState': 0,
+            'Turbulence': 0,
+            'TempPressLevel': 0,
+            'Temperature': -15,
+            'Pressure': 760,
+            'Haze': 0,
+            'LayerFog': 0,
+        }
