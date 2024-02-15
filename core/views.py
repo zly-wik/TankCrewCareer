@@ -3,8 +3,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from rest_framework.decorators import action
 from rest_framework.viewsets import ModelViewSet
 
-from core.models import MissionObject, Mission
-from core.serializers import MissionObjectSerializer, MissionSerializer
+from core.models import MissionObject, Mission, Vehicle
+from core.serializers import MissionObjectSerializer, MissionSerializer, VehicleSerializer
 
 
 class MissionObjectVS(ModelViewSet):
@@ -16,6 +16,12 @@ class MissionObjectVS(ModelViewSet):
     #     data_string = MissionObject.objects.get(pk=pk).dot_mission_format
         
     #     return HttpResponse(data_string)
+
+
+class VehicleVS(ModelViewSet):
+    queryset = Vehicle.objects.all()
+    serializer_class = VehicleSerializer
+
 
 class MissionOptionsVS(ModelViewSet):
     queryset = Mission.objects.all()

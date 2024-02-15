@@ -1,4 +1,8 @@
 from django.db import models
+from django.core.validators import (
+    MinValueValidator,
+    MaxValueValidator,
+)
 
 from typing import Optional
 
@@ -6,7 +10,7 @@ from core.enums import MissionObjectType
 from core.services import dict_to_dot_mission
 
 class MissionObject(models.Model):
-    """Base object used as parent for each mission object."""
+    """Base object used for each mission object."""
 
     # Model Fields =  pk field will be mission object Index field (in mission file).
     object_type = models.CharField(max_length=100, choices=MissionObjectType.choices())
@@ -15,7 +19,7 @@ class MissionObject(models.Model):
     mcu_targets = models.ManyToManyField('MissionObject', blank=True, related_name='target_parent')
     mcu_objects = models.ManyToManyField('MissionObject', blank=True, related_name='object_parent')
     position = models.JSONField(max_length=256)
-    properties = models.JSONField(max_length=1024)
+    properties = models.JSONField(max_length=1024, null=True, blank=True)
 
     def __str__(self) -> str:
         return f'{self.object_type} | [{self.pk}] {self.name}'
@@ -46,7 +50,53 @@ class MissionObject(models.Model):
             'Desc': self.desc,
             'Targets': self.mcu_targets_list,
             'Objects': self.mcu_objects_list,
-            # 'position': self.position,
+            'position': self.position,
+            **self.properties,
+        }
+        dot_mission_string = dict_to_dot_mission(self.object_type, object_keys)
+
+        return dot_mission_string
+
+
+class Vehicle(MissionObject):
+    """Child class used for easier Vehicles management."""
+
+    # Model Fields =  pk field will be mission object Index field (in mission file).
+    link_tr_id = models.OneToOneField(MissionObject, related_name='mission_obj_id', on_delete=models.CASCADE, null=True, blank=True) # TODO Validate if MissionObjectType is MCU_TR_ENTITY and has MisObjID with self.pk
+    script = models.CharField(max_length=100)
+    model = models.CharField(max_length=100)
+    country = models.PositiveIntegerField()
+    number_in_formation = models.PositiveIntegerField()
+    vulnerable = models.BooleanField()
+    engangeable = models.BooleanField()
+    limit_ammo = models.BooleanField()
+    ai_level = models.PositiveBigIntegerField()
+    coop_start = models.BooleanField()
+    fuel = models.PositiveIntegerField(validators=[
+        MinValueValidator(0, 'Fuel can\'t be less than 0'),
+        MaxValueValidator(100, 'Fuel can\'t be more than 100 %')
+    ])
+    
+    @property
+    def dot_mission_format(self) -> str: #currently not valid
+        object_keys = {
+            'Index': self.pk,
+            'Name': self.name,
+            'Desc': self.desc,
+            'Targets': self.mcu_targets_list,
+            'Objects': self.mcu_objects_list,
+            'position': self.position,
+            'LinkTrId': self.link_tr_id,
+            'Script': self.script,
+            'Model': self.model,
+            'Country': self.country,
+            'NumberInFormation': self.number_in_formation,
+            'Vulnerable': self.vulnerable,
+            'Engangeable': self.engangeable,
+            'LimitAmmo': self.limit_ammo,
+            'AILevel': self.ai_level,
+            'CoopStart': self.coop_start,
+            'Fuel': self.fuel,
             **self.properties,
         }
         dot_mission_string = dict_to_dot_mission(self.object_type, object_keys)
