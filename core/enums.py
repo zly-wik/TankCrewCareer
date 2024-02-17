@@ -21,3 +21,15 @@ class MissionObjectType(StrEnum):
     @classmethod
     def choices(cls):
         return tuple((i.name, i.value) for i in cls)
+
+
+class VehicleTypes(StrEnum):
+    PZ_IV = 'PzKpfw_IV'
+    PZ_V_PANTHER = 'PzKpfw_V_Panther'
+    PZ_VI_TIGER = 'PzKpfw_VI_Tiger'
+    KV_1S = 'KV-1S'
+    SU_152 = 'SU-152'
+
+    @classmethod
+    def choices(cls):
+        return tuple((i.name, i.value) for i in cls)

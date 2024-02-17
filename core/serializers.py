@@ -25,6 +25,7 @@ class VehicleSerializer(ModelSerializer):
         fields = [
             'pk',
             'object_type',
+            'vehicle_type',
             'name',
             'desc',
             'mcu_targets',
@@ -47,6 +48,9 @@ class VehicleSerializer(ModelSerializer):
         read_only_fields = [
             'pk',
             'link_tr_id',
+            'object_type',
+            'script',
+            'model',
         ]
 
 

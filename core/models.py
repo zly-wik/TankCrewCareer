@@ -6,8 +6,14 @@ from django.core.validators import (
 
 from typing import Optional
 
-from core.enums import MissionObjectType
-from core.services import dict_to_dot_mission
+from core.enums import (
+    MissionObjectType,
+    VehicleTypes,
+)
+from core.services import (
+    dict_to_dot_mission,
+    get_vehicle_script_and_model,
+)
 
 class MissionObject(models.Model):
     """Base object used for each mission object."""
@@ -63,8 +69,17 @@ class Vehicle(MissionObject):
 
     # Model Fields =  pk field will be mission object Index field (in mission file).
     link_tr_id = models.OneToOneField(MissionObject, related_name='mission_obj_id', on_delete=models.CASCADE, null=True, blank=True) # TODO Validate if MissionObjectType is MCU_TR_ENTITY and has MisObjID with self.pk
-    script = models.CharField(max_length=100)
-    model = models.CharField(max_length=100)
+    vehicle_type = models.CharField(max_length=100, choices=VehicleTypes.choices())
+    script = models.CharField(
+        max_length=100,
+        blank=True,
+        null=False,
+    )
+    model = models.CharField(
+        max_length=100,
+        blank=True,
+        null=False,
+    )
     country = models.PositiveIntegerField()
     number_in_formation = models.PositiveIntegerField()
     vulnerable = models.BooleanField()
