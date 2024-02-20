@@ -45,6 +45,8 @@ def dict_to_dot_mission(object_type: MissionObjectType, data: dict) -> str:
         elif key == 'MissionObjects':
             data_string += '}\n\n' # We need to end Options block before
             for object in value:
+                if object.object_type == MissionObjectType.VEHICLE:
+                    print(object.__dict__)
                 data_string += object.dot_mission_format
                 data_string += '}\n\n'
         else:

@@ -10,10 +10,7 @@ from core.enums import (
     MissionObjectType,
     VehicleTypes,
 )
-from core.services import (
-    dict_to_dot_mission,
-    get_vehicle_script_and_model,
-)
+from core.services import dict_to_dot_mission
 
 class MissionObject(models.Model):
     """Base object used for each mission object."""
@@ -49,14 +46,14 @@ class MissionObject(models.Model):
         return mcu_objects
 
     @property
-    def dot_mission_format(self) -> str: #currently not valid
+    def dot_mission_format(self) -> str:
         object_keys = {
             'Index': self.pk,
             'Name': self.name,
             'Desc': self.desc,
             'Targets': self.mcu_targets_list,
             'Objects': self.mcu_objects_list,
-            'position': self.position,
+            **self.position,
             **self.properties,
         }
         dot_mission_string = dict_to_dot_mission(self.object_type, object_keys)
@@ -93,7 +90,7 @@ class Vehicle(MissionObject):
     ])
     
     @property
-    def dot_mission_format(self) -> str: #currently not valid
+    def dot_mission_format(self) -> str:
         object_keys = {
             'Index': self.pk,
             'Name': self.name,
@@ -112,6 +109,7 @@ class Vehicle(MissionObject):
             'AILevel': self.ai_level,
             'CoopStart': self.coop_start,
             'Fuel': self.fuel,
+            **self.position,
             **self.properties,
         }
         dot_mission_string = dict_to_dot_mission(self.object_type, object_keys)
