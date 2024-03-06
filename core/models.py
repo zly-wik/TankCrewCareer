@@ -33,9 +33,6 @@ class MissionObject(models.Model):
 
     @property
     def mcu_targets_list(self) -> list:
-        if self.object_type == MissionObjectType.Vehicle:
-            # Vehicles targets are in LinkTrId entity
-            return []
         mcu_targets = []
         for mcu in self.mcu_targets.all():
             mcu_targets.append(mcu.index)
@@ -43,9 +40,6 @@ class MissionObject(models.Model):
 
     @property
     def mcu_objects_list(self) -> list:
-        if self.object_type == MissionObjectType.Vehicle:
-            # Vehicles objects are in LinkTrId entity
-            return []
         mcu_objects = []
         for mcu in self.mcu_objects.all():
             mcu_objects.append(mcu.index)
@@ -57,11 +51,12 @@ class MissionObject(models.Model):
             'Index': self.pk,
             'Name': self.name,
             'Desc': self.desc,
-            'Targets': self.mcu_targets_list,
-            'Objects': self.mcu_objects_list,
             **self.position,
             **self.properties,
         }
+        if not self.object_type == MissionObjectType.Vehicle:
+            object_keys['Targets'] = self.mcu_targets_list
+            object_keys['Objects'] = self.mcu_objects_list
         dot_mission_string = dict_to_dot_mission(self.object_type, object_keys)
 
         return dot_mission_string
@@ -86,7 +81,7 @@ class Vehicle(MissionObject):
     country = models.PositiveIntegerField()
     number_in_formation = models.PositiveIntegerField()
     vulnerable = models.BooleanField()
-    engangeable = models.BooleanField()
+    engageable = models.BooleanField()
     limit_ammo = models.BooleanField()
     ai_level = models.PositiveBigIntegerField()
     coop_start = models.BooleanField()
@@ -108,11 +103,11 @@ class Vehicle(MissionObject):
             'Country': self.country,
             'NumberInFormation': self.number_in_formation,
             'Vulnerable': self.vulnerable,
-            'Engangeable': self.engangeable,
+            'Engageable': self.engangeable,
             'LimitAmmo': self.limit_ammo,
             'AILevel': self.ai_level,
             'CoopStart': self.coop_start,
-            'Fuel': self.fuel,
+            'Fuel': self.fuel / 100.0,
             **self.position,
             **self.properties,
         }
@@ -128,8 +123,8 @@ class Mission(models.Model):
     lc_name = models.PositiveIntegerField()
     lc_desc = models.PositiveIntegerField()
     lc_author = models.PositiveIntegerField()
-    mission_time = models.PositiveIntegerField()  # 123000 = 12:30:00 ect.
-    mission_date = models.PositiveIntegerField()  # 19111942 - 19.11.1924
+    mission_time = models.PositiveIntegerField()  # 123000 = 12:30:00
+    mission_date = models.PositiveIntegerField()  # 19111942 = 19.11.1924
     mission_properties = models.JSONField(max_length=1024)
     wind_layers = models.JSONField(max_length=256)
     countries = models.JSONField(max_length=256)

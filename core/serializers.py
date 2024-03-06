@@ -41,7 +41,7 @@ class VehicleSerializer(serializers.ModelSerializer):
             'country',
             'number_in_formation',
             'vulnerable',
-            'engangeable',
+            'engageable',
             'limit_ammo',
             'ai_level',
             'coop_start',

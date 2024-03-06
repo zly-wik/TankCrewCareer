@@ -21,14 +21,8 @@ def create_linked_translator_entity(sender, instance=None, created=False, **kwar
             object_type=MissionObjectType.MCU_TR_Entity,
             position=instance.position,
             properties = properties,
-            
-            # attached_mission = instance.attached_mission,
         )
         linked_tr.save()
-
-        # if instance.attached_mission:
-            # instance.attached_mission.set(linked_tr)
-                # linked_tr.attached_mission.set(instance)
 
         instance.link_tr_id = linked_tr
         instance.save()
@@ -56,7 +50,7 @@ def copy_vehicle_fields_to_properties_field_from_mission_object(sender, instance
         "Country": instance.country,
         "NumberInFormation": instance.number_in_formation,
         "Vulnerable":  1 if instance.vulnerable else 0,
-        "Engangeable": 1 if instance.engangeable else 0,
+        "Engageable": 1 if instance.engageable else 0,
         "LimitAmmo": 1 if instance.limit_ammo else 0,
         "AILevel": instance.ai_level,
         "DamageReport": 50,
