@@ -8,15 +8,28 @@ from core.services import get_vehicle_script_and_model
 @receiver(post_save, sender=Vehicle)
 def create_linked_translator_entity(sender, instance=None, created=False, **kwargs):
     if not instance:
+        print('No vehicle instance error')
         return
     if created:
+        properties = {
+            'Enabled': 1,
+            'MisObjID': instance.pk,
+        }
         linked_tr = MissionObject.objects.create(
             name=instance.name + " linked translator",
             desc=instance.name + " linked translator entity",
-            object_type=MissionObjectType.MCU_TR_ENTITY,
-            position=instance.position
+            object_type=MissionObjectType.MCU_TR_Entity,
+            position=instance.position,
+            properties = properties,
+            
+            # attached_mission = instance.attached_mission,
         )
         linked_tr.save()
+
+        # if instance.attached_mission:
+            # instance.attached_mission.set(linked_tr)
+                # linked_tr.attached_mission.set(instance)
+
         instance.link_tr_id = linked_tr
         instance.save()
 
@@ -70,3 +83,4 @@ def copy_vehicle_fields_to_properties_field_from_mission_object(sender, instance
         "TCode": "",
         "TCodeColor": ""
     }
+    print(instance.properties)

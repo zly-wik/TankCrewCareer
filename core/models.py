@@ -33,6 +33,9 @@ class MissionObject(models.Model):
 
     @property
     def mcu_targets_list(self) -> list:
+        if self.object_type == MissionObjectType.Vehicle:
+            # Vehicles targets are in LinkTrId entity
+            return []
         mcu_targets = []
         for mcu in self.mcu_targets.all():
             mcu_targets.append(mcu.index)
@@ -40,6 +43,9 @@ class MissionObject(models.Model):
 
     @property
     def mcu_objects_list(self) -> list:
+        if self.object_type == MissionObjectType.Vehicle:
+            # Vehicles objects are in LinkTrId entity
+            return []
         mcu_objects = []
         for mcu in self.mcu_objects.all():
             mcu_objects.append(mcu.index)
@@ -65,7 +71,7 @@ class Vehicle(MissionObject):
     """Child class used for easier Vehicles management."""
 
     # Model Fields =  pk field will be mission object Index field (in mission file).
-    link_tr_id = models.OneToOneField(MissionObject, related_name='mission_obj_id', on_delete=models.CASCADE, null=True, blank=True) # TODO Validate if MissionObjectType is MCU_TR_ENTITY and has MisObjID with self.pk
+    link_tr_id = models.OneToOneField(MissionObject, related_name='mission_obj_id', on_delete=models.CASCADE, null=True, blank=True) # TODO Validate if MissionObjectType is MCU_TR_Entity and has MisObjID with self.pk
     vehicle_type = models.CharField(max_length=100, choices=VehicleTypes.choices())
     script = models.CharField(
         max_length=100,
@@ -92,15 +98,13 @@ class Vehicle(MissionObject):
     @property
     def dot_mission_format(self) -> str:
         object_keys = {
-            'Index': self.pk,
             'Name': self.name,
-            'Desc': self.desc,
-            'Targets': self.mcu_targets_list,
-            'Objects': self.mcu_objects_list,
-            'position': self.position,
+            'Index': self.pk,
             'LinkTrId': self.link_tr_id,
+            'position': self.position,
             'Script': self.script,
             'Model': self.model,
+            'Desc': self.desc,
             'Country': self.country,
             'NumberInFormation': self.number_in_formation,
             'Vulnerable': self.vulnerable,
@@ -146,7 +150,7 @@ class Mission(models.Model):
             'MissionObjects': self.mission_objects.all(),
         }
         self.dot_mission_string = '# Mission File Version = 1.0;\n\n'
-        self.dot_mission_string += dict_to_dot_mission(MissionObjectType.OPTIONS, object_keys)
+        self.dot_mission_string += dict_to_dot_mission(MissionObjectType.Options, object_keys)
         self.dot_mission_string += '\n\n# end of file'
         
         if not filename:

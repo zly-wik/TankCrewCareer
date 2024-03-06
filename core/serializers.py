@@ -1,9 +1,10 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework import serializers
+from core.enums import MissionObjectType
 
 from core.models import MissionObject, Mission, Vehicle
 
 
-class MissionObjectSerializer(ModelSerializer):
+class MissionObjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = MissionObject
         fields = [
@@ -19,7 +20,8 @@ class MissionObjectSerializer(ModelSerializer):
         ]
 
 
-class VehicleSerializer(ModelSerializer):
+class VehicleSerializer(serializers.ModelSerializer):
+    object_type = serializers.HiddenField(default=MissionObjectType.Vehicle)
     class Meta:
         model = Vehicle
         fields = [
@@ -28,9 +30,9 @@ class VehicleSerializer(ModelSerializer):
             'vehicle_type',
             'name',
             'desc',
+            'position',
             'mcu_targets',
             'mcu_objects',
-            'position',
             'properties',
             'attached_mission',
             'link_tr_id',
@@ -54,7 +56,7 @@ class VehicleSerializer(ModelSerializer):
         ]
 
 
-class MissionSerializer(ModelSerializer):
+class MissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Mission
         
