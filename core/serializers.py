@@ -71,8 +71,9 @@ class MissionSerializer(serializers.ModelSerializer):
             'mission_properties',
             'wind_layers',
             'countries',
-            'mission_objects',
+            # 'mission_objects',
         ]
         read_only_fields = [
             'pk',
+            # 'mission_objects',
         ]

@@ -2,7 +2,7 @@ from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
 from core.enums import MissionObjectType
-from core.models import MissionObject, Vehicle
+from core.models import Mission, MissionObject, Vehicle
 from core.services import get_vehicle_script_and_model
 
 @receiver(post_save, sender=Vehicle)
@@ -10,22 +10,28 @@ def create_linked_translator_entity(sender, instance=None, created=False, **kwar
     if not instance:
         print('No vehicle instance error')
         return
-    if created:
-        properties = {
-            'Enabled': 1,
-            'MisObjID': instance.pk,
-        }
-        linked_tr = MissionObject.objects.create(
-            name=instance.name + " linked translator",
-            desc=instance.name + " linked translator entity",
-            object_type=MissionObjectType.MCU_TR_Entity,
-            position=instance.position,
-            properties = properties,
-        )
-        linked_tr.save()
+    if not created:
+        return
+    if instance.attached_mission:
+        print(instance.__dict__)
+        # attached_mission = Mission.objects.get(pk=instance.attached_mission.pk)
+    properties = {
+        'Enabled': 1,
+        'MisObjID': instance.pk,
+    }
+    linked_tr = MissionObject.objects.create(
+        name=instance.name + " linked translator",
+        desc=instance.name + " linked translator entity",
+        object_type=MissionObjectType.MCU_TR_Entity,
+        position=instance.position,
+        properties = properties,
+        attached_mission = instance.attached_mission,
+    )
 
-        instance.link_tr_id = linked_tr
-        instance.save()
+    linked_tr.save()
+
+    instance.link_tr_id = linked_tr
+    instance.save()
 
 
 @receiver(pre_save, sender=Vehicle)
@@ -77,4 +83,3 @@ def copy_vehicle_fields_to_properties_field_from_mission_object(sender, instance
         "TCode": "",
         "TCodeColor": ""
     }
-    print(instance.properties)

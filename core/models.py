@@ -23,6 +23,7 @@ class MissionObject(models.Model):
     mcu_objects = models.ManyToManyField('MissionObject', blank=True, related_name='object_parent')
     position = models.JSONField(max_length=256)
     properties = models.JSONField(max_length=1024, null=True, blank=True)
+    attached_mission = models.ForeignKey('Mission', blank=True, null=True, on_delete=models.SET_NULL, related_name='mission_objects')
 
     def __str__(self) -> str:
         return f'{self.object_type} | [{self.pk}] {self.name}'
@@ -128,7 +129,6 @@ class Mission(models.Model):
     mission_properties = models.JSONField(max_length=1024)
     wind_layers = models.JSONField(max_length=256)
     countries = models.JSONField(max_length=256)
-    mission_objects = models.ManyToManyField(MissionObject, blank=True, related_name='attached_mission')
     
     dot_mission_string: str = None
     
