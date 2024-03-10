@@ -7,14 +7,9 @@ from core.services import get_vehicle_script_and_model
 
 @receiver(post_save, sender=Vehicle)
 def create_linked_translator_entity(sender, instance=None, created=False, **kwargs):
-    if not instance:
-        print('No vehicle instance error')
+    if not instance or not created:
         return
-    if not created:
-        return
-    if instance.attached_mission:
-        print(instance.__dict__)
-        # attached_mission = Mission.objects.get(pk=instance.attached_mission.pk)
+
     properties = {
         'Enabled': 1,
         'MisObjID': instance.pk,
@@ -27,7 +22,6 @@ def create_linked_translator_entity(sender, instance=None, created=False, **kwar
         properties = properties,
         attached_mission = instance.attached_mission,
     )
-
     linked_tr.save()
 
     instance.link_tr_id = linked_tr

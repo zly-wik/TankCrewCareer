@@ -7,17 +7,17 @@ from core.models import MissionObject, Mission, Vehicle
 from core.serializers import MissionObjectSerializer, MissionSerializer, VehicleSerializer
 
 
-class MissionObjectVS(ModelViewSet):
+class MissionObjectViewSet(ModelViewSet):
     queryset = MissionObject.objects.all()
     serializer_class = MissionObjectSerializer
 
 
-class VehicleVS(ModelViewSet):
+class VehicleViewSet(ModelViewSet):
     queryset = Vehicle.objects.all()
     serializer_class = VehicleSerializer
 
 
-class MissionOptionsVS(ModelViewSet):
+class MissionOptionsViewSet(ModelViewSet):
     queryset = Mission.objects.all()
     serializer_class = MissionSerializer
     
